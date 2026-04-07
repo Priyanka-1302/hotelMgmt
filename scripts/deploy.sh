@@ -2,7 +2,7 @@
 set -e
 
 REGION="ap-south-1"
-ECR_URI="YOUR_ECR_URI_HERE"   # paste your ECR URI from Step 8
+ECR_URI=601512582150.dkr.ecr.ap-south-1.amazonaws.com/wild-oasis
 IMAGE_TAG=$(cat /home/ubuntu/deployment/IMAGE_TAG)
 
 echo ">>> Logging into ECR..."
