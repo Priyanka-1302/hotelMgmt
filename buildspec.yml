@@ -1,0 +1,38 @@
+# buildspec.yml (create this file in your project root)
+version: 0.2
+
+env:
+  secrets-manager:
+    DATABASE_URL: wild-oasis/production:DATABASE_URL
+    NEXTAUTH_SECRET: wild-oasis/production:NEXTAUTH_SECRET
+    NEXTAUTH_URL: wild-oasis/production:NEXTAUTH_URL
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URI
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-8)
+      - echo $IMAGE_TAG > IMAGE_TAG
+  build:
+    commands:
+      - echo Building Docker image...
+      - |
+        docker build \
+          --build-arg DATABASE_URL=$DATABASE_URL \
+          --build-arg NEXTAUTH_SECRET=$NEXTAUTH_SECRET \
+          --build-arg NEXTAUTH_URL=$NEXTAUTH_URL \
+          -t $ECR_URI:$IMAGE_TAG \
+          -t $ECR_URI:latest .
+  post_build:
+    commands:
+      - echo Pushing to ECR...
+      - docker push $ECR_URI:$IMAGE_TAG
+      - docker push $ECR_URI:latest
+
+artifacts:
+  files:
+    - appspec.yml
+    - scripts/**/*
+    - IMAGE_TAG
+  discard-paths: no

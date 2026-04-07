@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   async redirects() {
     return [
       {
@@ -16,6 +17,11 @@ const nextConfig = {
         hostname: "res.cloudinary.com",
         port: "",
         pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "wild-oasis-assets.s3.ap-south-1.amazonaws.com",
+        pathname: "/**",
       },
     ],
   },
